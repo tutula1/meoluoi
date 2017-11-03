@@ -13,6 +13,7 @@
     Route::group(['prefix' => 'api'], function(){
         Route::group(['middleware' => 'load.first'], function(){
              Route::resource('category', 'CategoryController');
+             Route::get('slidebar', 'CategoryController@slidebar');
              Route::resource('product', 'ProductController');
              Route::resource('page', 'PageController');
         });

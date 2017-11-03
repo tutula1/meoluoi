@@ -6,10 +6,28 @@ use Illuminate\Http\Request;
 
 use App\Http\Requests;
 
+use App\Category;
+
 use App\Product;
 
 class CategoryController extends Controller
 {
+    public function getChildCategories($parent_id)
+    {
+        $categories = Category::select("id", "name_en", "name_vi", "parent", "order")->whereNull("deleted_at")->where("parent", $parent_id)->orderBy("order", "ASC")->get();
+        foreach ($categories as $category) {
+            $category->slug_en = self::slugify($category->name_en);
+            $category->slug_vi = self::slugify($category->name_vi);
+            $category->items = self::getChildCategories($category->id);
+        }
+        return $categories;
+    }
+    public function slidebar()
+    {
+        $categories = self::getChildCategories(0);
+        return response()->json($categories);
+    }
+    
     /**
      * Display a listing of the resource.
      *
